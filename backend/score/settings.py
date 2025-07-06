@@ -27,15 +27,10 @@ DEBUG = True
 
 import os
 
-ALLOWED_HOSTS = [
-    "*",
-    "backend-misty-forest-8537.fly.dev",
-    "localhost",   # keep this for local dev!
-    "127.0.0.1",
-]
-print("ALLOWED_HOSTS:", ALLOWED_HOSTS)
 
-#ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS", "localhost,127.0.0.1").split(",")
+
+
+ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS", "localhost,127.0.0.1").split(",")
 
 
 
