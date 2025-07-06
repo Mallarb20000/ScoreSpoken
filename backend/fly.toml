@@ -1,9 +1,9 @@
-# fly.toml app configuration file generated for backend-purple-waterfall-612 on 2025-07-06T17:07:12+01:00
+# fly.toml app configuration file generated for backend-misty-forest-8537.fly.dev on 2025-07-06T17:07:12+01:00
 #
 # See https://fly.io/docs/reference/configuration/ for information about how to use this file.
 #
 
-app = 'backend-purple-waterfall-612'
+app = 'backend-misty-forest-8537.fly.dev'
 primary_region = 'lhr'
 console_command = '/code/manage.py shell'
 
