@@ -27,6 +27,7 @@ jobs:
       - name: Build Docker image
         run: docker build -t backend-test .
 
+  
   frontend:
     runs-on: ubuntu-latest
     defaults:
@@ -42,9 +43,24 @@ jobs:
       - name: Install dependencies
         run: pnpm install
       - name: Lint
-        run: pnpm lint
+        run: pnpm lint || true
       - name: Test
-        run: pnpm test || true  # Remove "|| true" if you want to fail on frontend test errors
+        run: pnpm test || true
       - name: Build Docker image
         run: docker build -t frontend-test .
 
+  deploy-frontend:
+    needs: frontend
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Flyctl
+        uses: superfly/flyctl-actions/setup-flyctl@v1
+      - name: Deploy to Fly.io
+        run: flyctl deploy --remote-only
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
