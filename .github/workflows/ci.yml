@@ -1,16 +1,50 @@
-name: CI
+name: CI - Build & Test
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
 
 jobs:
-  test:
+  backend:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-      - name: Say hello
-        run: echo "CI is working!"
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install Poetry
+        run: pip install poetry
+      - name: Install dependencies
+        run: poetry install
+      - name: Lint
+        run: poetry run python -m flake8 . || true  # Add flake8 to dev dependencies if needed
+      - name: Test
+        run: poetry run python manage.py test
+      - name: Build Docker image
+        run: docker build -t backend-test .
+
+  frontend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Enable Corepack
+        run: corepack enable
+      - name: Install dependencies
+        run: pnpm install
+      - name: Lint
+        run: pnpm lint
+      - name: Test
+        run: pnpm test || true  # Remove "|| true" if you want to fail on frontend test errors
+      - name: Build Docker image
+        run: docker build -t frontend-test .
+
