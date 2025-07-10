@@ -75,8 +75,14 @@ jobs:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          aws-region: ap-south-1
+          aws-region: eu-north-1
           role-to-assume: arn:aws:iam::537976614557:role/Github
+
+      - name: Print AWS env
+        run: |
+             echo "AWS_ACCESS_KEY_ID: $AWS_ACCESS_KEY_ID"
+             echo "AWS_SECRET_ACCESS_KEY: $AWS_SECRET_ACCESS_KEY"
+             echo "AWS_SESSION_TOKEN: $AWS_SESSION_TOKEN"
 
       # Deploy to Elastic Beanstalk
       - name: Deploy to Elastic Beanstalk
@@ -85,5 +91,5 @@ jobs:
           application_name: 'scorespoken-prod'
           environment_name: 'scorespoken-prod-env'
           version_label: ${{ github.sha }}
-          region: 'ap-south-1'
+          region: 'eu-north-1'
           deployment_package: 'Dockerrun.aws.json'
