@@ -2,7 +2,7 @@
   "version": 2,
   "services": {
     "frontend": {
-      "image": "ghcr.io/yourorg/your-frontend:latest",
+      "image": "ghcr.io/mallarb20000/score-frontend:latest",
       "essential": true,
       "memory": 512,
       "portMappings": [
@@ -10,7 +10,7 @@
       ]
     },
     "backend": {
-      "image": "ghcr.io/yourorg/your-backend:latest",
+      "image": "ghcr.io/mallarb20000/score-backend:latest",
       "essential": true,
       "memory": 512,
       "portMappings": [
