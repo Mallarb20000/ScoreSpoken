@@ -21,11 +21,11 @@ jobs:
       - name: Install dependencies
         run: poetry install
       - name: Lint
-        run: poetry run python -m flake8 . || true  # Add flake8 to dev dependencies if needed
+        run: poetry run python -m flake8 . || true
       - name: Test
         run: poetry run python manage.py test
       - name: Build Docker image
-        run: docker build -t backend-test .
+        run: docker build -t ghcr.io/YOUR_ORG/your-backend:latest .
 
   frontend:
     runs-on: ubuntu-latest
@@ -46,36 +46,62 @@ jobs:
       - name: Test
         run: pnpm test || true
       - name: Build Docker image
-        run: docker build -t frontend-test .
+        run: docker build -t ghcr.io/YOUR_ORG/your-frontend:latest .
 
-  deploy-frontend:
-    needs: frontend
+  push-images:
+    needs: [backend, frontend]
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main'
-    defaults:
-      run:
-        working-directory: frontend
     steps:
       - uses: actions/checkout@v4
-      - name: Install Flyctl
-        uses: superfly/flyctl-actions/setup-flyctl@v1
-      - name: Deploy to Fly.io (Frontend)
-        run: flyctl deploy --remote-only
-        env:
-          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
 
-  deploy-backend:
-    needs: backend
+      # Login to registry (GHCR example, adjust for ECR or Docker Hub as needed)
+      - name: Login to GHCR
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
+      # Push backend image
+      - name: Push backend image
+        run: docker push ghcr.io/YOUR_ORG/your-backend:latest
+
+      # Push frontend image
+      - name: Push frontend image
+        run: docker push ghcr.io/YOUR_ORG/your-frontend:latest
+
+      # (Optional) Update Dockerrun.aws.json image URLs if you use dynamic tags
+
+      # Save Dockerrun.aws.json as artifact for next job
+      - name: Upload Dockerrun.aws.json
+        uses: actions/upload-artifact@v4
+        with:
+          name: dockerrun
+          path: Dockerrun.aws.json
+
+  deploy-eb:
+    needs: push-images
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
-    defaults:
-      run:
-        working-directory: backend
     steps:
       - uses: actions/checkout@v4
-      - name: Install Flyctl
-        uses: superfly/flyctl-actions/setup-flyctl@v1
-      - name: Deploy to Fly.io (Backend)
-        run: flyctl deploy --remote-only
-        env:
-          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN_BACKEND }}
+
+      # Download Dockerrun.aws.json
+      - name: Download Dockerrun.aws.json
+        uses: actions/download-artifact@v4
+        with:
+          name: dockerrun
+
+      # Configure AWS credentials (OIDC preferred, or access keys)
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: ap-south-1
+          role-to-assume: arn:aws:iam::537976614557:role/Github
+          # or use aws-access-key-id / aws-secret-access-key
+
+      # Deploy to Elastic Beanstalk
+      - name: Deploy to Elastic Beanstalk
+        uses: einaregilsson/beanstalk-deploy@v21
+        with:
+          application_name: 'scorespoken-prod'
+          environment_name: 'scorespoken-prod-env'
+          version_label: ${{ github.sha }}
+          region: 'ap-south-1'
+          deployment_package: 'Dockerrun.aws.json'

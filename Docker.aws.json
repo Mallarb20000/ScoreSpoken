@@ -1,0 +1,21 @@
+{
+  "version": 2,
+  "services": {
+    "frontend": {
+      "image": "ghcr.io/yourorg/your-frontend:latest",
+      "essential": true,
+      "memory": 512,
+      "portMappings": [
+        { "hostPort": 3000, "containerPort": 3000 }
+      ]
+    },
+    "backend": {
+      "image": "ghcr.io/yourorg/your-backend:latest",
+      "essential": true,
+      "memory": 512,
+      "portMappings": [
+        { "hostPort": 8000, "containerPort": 8000 }
+      ]
+    }
+  }
+}
