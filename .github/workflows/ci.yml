@@ -81,7 +81,7 @@ jobs:
         uses: einaregilsson/beanstalk-deploy@v21
         with:
           application_name: 'scorespoken-prod'
-          environment_name: 'scorespoken-prod-env'
+          environment_name: 'Scorespoken-prod-env'
           version_label: ${{ github.sha }}
           region: 'eu-north-1'
           deployment_package: 'Dockerrun.aws.json'
