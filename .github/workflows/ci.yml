@@ -78,15 +78,12 @@ jobs:
           aws-region: eu-north-1
           role-to-assume: arn:aws:iam::537976614557:role/Github
 
-      - name: Print AWS env
-        run: |
-             echo "AWS_ACCESS_KEY_ID: $AWS_ACCESS_KEY_ID"
-             echo "AWS_SECRET_ACCESS_KEY: $AWS_SECRET_ACCESS_KEY"
-             echo "AWS_SESSION_TOKEN: $AWS_SESSION_TOKEN"
 
       # Deploy to Elastic Beanstalk
       - name: Deploy to Elastic Beanstalk
         uses: einaregilsson/beanstalk-deploy@v21
+        env:
+          AWS_REGION: eu-north-1
         with:
           application_name: 'scorespoken-prod'
           environment_name: 'scorespoken-prod-env'
