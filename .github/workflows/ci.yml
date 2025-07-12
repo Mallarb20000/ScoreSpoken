@@ -31,61 +31,21 @@ jobs:
         run: poetry run python manage.py test
       - name: Login to GHCR
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+      - name: Set image tag
+        id: vars
+        run: echo "IMAGE_TAG=${GITHUB_SHA}" >> $GITHUB_ENV
       - name: Build Docker image
-        run: docker build -t ghcr.io/mallarb20000/score-backend:latest .
+        run: docker build -t ghcr.io/mallarb20000/score-backend:${{ env.IMAGE_TAG }} .
       - name: Push Docker image
-        run: docker push ghcr.io/mallarb20000/score-backend:latest
-
-  # frontend:
-  #   runs-on: ubuntu-latest
-  #   defaults:
-  #     run:
-  #       working-directory: frontend
-  #   steps:
-  #     - uses: actions/checkout@v4
-  #     - uses: actions/setup-node@v4
-  #       with:
-  #         node-version: "20"
-  #     - name: Enable Corepack
-  #       run: corepack enable
-  #     - name: Install dependencies
-  #       run: pnpm install
-  #     - name: Lint
-  #       run: pnpm lint || true
-  #     - name: Test
-  #       run: pnpm test || true
-  #     - name: Login to GHCR
-  #       missing line ask gpt
-  #     - name: Build Docker image
-  #       run: docker build -t ghcr.io/mallarb20000/score-frontend:latest .
-  #     - name: Push Docker image
-  #       run: docker push ghcr.io/mallarb20000/score-frontend:latest
-
-  deploy-eb:
-    needs: [backend]
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main'
-    steps:
-      - uses: actions/checkout@v4
-
-      # Configure AWS credentials (OIDC)
+        run: docker push ghcr.io/mallarb20000/score-backend:${{ env.IMAGE_TAG }}
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
-        id: aws_creds
         with:
           role-to-assume: arn:aws:iam::537976614557:role/Github
           aws-region: eu-north-1
-          output-credentials: true
-
-      - name: Deploy to Elastic Beanstalk
-        uses: einaregilsson/beanstalk-deploy@v21
-        with:
-          application_name: 'scorespoken-prod'
-          environment_name: 'Scorespoken-prod-env'
-          version_label: ${{ github.sha }}
-          region: 'eu-north-1'
-          #deployment_package: 'Dockerrun.aws.json'
-          use_existing_version_if_available: true
-          aws_access_key: ${{ steps.aws_creds.outputs.aws-access-key-id }}
-          aws_secret_key: ${{ steps.aws_creds.outputs.aws-secret-access-key }}
-          aws_session_token: ${{ steps.aws_creds.outputs.aws-session-token }}
+      - name: Update Beanstalk Docker image
+        run: |
+          aws elasticbeanstalk update-environment \
+            --environment-name Scorespoken-prod-env \
+            --region eu-north-1 \
+            --option-settings Namespace=aws:elasticbeanstalk:container:docker,OptionName=Image,Value=ghcr.io/mallarb20000/score-backend:${{ env.IMAGE_TAG }}

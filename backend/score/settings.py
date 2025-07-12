@@ -27,10 +27,15 @@ DEBUG = True
 
 import os
 
+ALLOWED_HOSTS = [
+    "*",
+    "backend-misty-forest-8537.fly.dev",
+    "localhost",   # keep this for local dev!
+    "127.0.0.1",
+]
+print("ALLOWED_HOSTS:", ALLOWED_HOSTS)
 
-
-
-ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS", "localhost,127.0.0.1").split(",")
+#ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS", "localhost,127.0.0.1").split(",")
 
 
 
@@ -80,9 +85,13 @@ WSGI_APPLICATION = 'score.wsgi.application'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+    "default": {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": os.environ.get("POSTGRES_DB", "scorespoken"),
+        "USER": os.environ.get("POSTGRES_USER", "your_username"),
+        "PASSWORD": os.environ.get("POSTGRES_PASSWORD", "your_password"),
+        "HOST": os.environ.get("POSTGRES_HOST", "your-db-instance.abc123xyz.ap-south-1.rds.amazonaws.com"),
+        "PORT": os.environ.get("POSTGRES_PORT", "5432"),
     }
 }
 
