@@ -1,21 +1,12 @@
 {
-  "version": 2,
-  "services": {
-    "frontend": {
-      "image": "ghcr.io/mallarb20000/score-frontend:latest",
-      "essential": true,
-      "memory": 512,
-      "portMappings": [
-        { "hostPort": 3000, "containerPort": 3000 }
-      ]
-    },
-    "backend": {
-      "image": "ghcr.io/mallarb20000/score-backend:latest",
-      "essential": true,
-      "memory": 512,
-      "portMappings": [
-        { "hostPort": 8000, "containerPort": 8000 }
-      ]
+  "AWSEBDockerrunVersion": 1,
+  "Image": {
+    "Name": "ghcr.io/mallarb20000/score-backend:latest",
+    "Update": "true"
+  },
+  "Ports": [
+    {
+      "ContainerPort": "8000"
     }
-  }
+  ]
 }
