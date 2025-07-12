@@ -18,34 +18,59 @@ jobs:
         working-directory: backend
     steps:
       - uses: actions/checkout@v4
+
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+
       - name: Install Poetry
         run: pip install poetry
+
       - name: Install dependencies
         run: poetry install
+
       - name: Lint
         run: poetry run python -m flake8 . || true
+
       - name: Test
         run: poetry run python manage.py test
+
       - name: Login to GHCR
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
       - name: Set image tag
         id: vars
         run: echo "IMAGE_TAG=${GITHUB_SHA}" >> $GITHUB_ENV
+
       - name: Build Docker image
         run: docker build -t ghcr.io/mallarb20000/score-backend:${{ env.IMAGE_TAG }} .
+
       - name: Push Docker image
         run: docker push ghcr.io/mallarb20000/score-backend:${{ env.IMAGE_TAG }}
+
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: arn:aws:iam::537976614557:role/Github
           aws-region: eu-north-1
-      - name: Update Beanstalk Docker image
+
+      - name: Create Beanstalk App Version
+        run: |
+          aws elasticbeanstalk create-application-version \
+            --application-name Scorespoken-prod \
+            --version-label ${{ env.IMAGE_TAG }} \
+            --source-build-information file://<(echo '{
+              "Platform": "Docker running on 64bit Amazon Linux 2023",
+              "Image": {
+                "Name": "ghcr.io/mallarb20000/score-backend:${{ env.IMAGE_TAG }}"
+              }
+            }') \
+            --region eu-north-1 \
+            --process
+
+      - name: Update Beanstalk Environment
         run: |
           aws elasticbeanstalk update-environment \
             --environment-name Scorespoken-prod-env \
-            --region eu-north-1 \
-            --option-settings Namespace=aws:elasticbeanstalk:container:docker,OptionName=Image,Value=ghcr.io/mallarb20000/score-backend:${{ env.IMAGE_TAG }}
+            --version-label ${{ env.IMAGE_TAG }} \
+            --region eu-north-1
