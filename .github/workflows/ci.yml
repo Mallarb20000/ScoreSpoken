@@ -85,6 +85,7 @@ jobs:
           version_label: ${{ github.sha }}
           region: 'eu-north-1'
           deployment_package: 'Dockerrun.aws.json'
+          use_existing_version_if_available: true
           aws_access_key: ${{ steps.aws_creds.outputs.aws-access-key-id }}
           aws_secret_key: ${{ steps.aws_creds.outputs.aws-secret-access-key }}
           aws_session_token: ${{ steps.aws_creds.outputs.aws-session-token }}
