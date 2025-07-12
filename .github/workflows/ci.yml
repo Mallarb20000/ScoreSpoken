@@ -36,30 +36,30 @@ jobs:
       - name: Push Docker image
         run: docker push ghcr.io/mallarb20000/score-backend:latest
 
-  frontend:
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: frontend
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: "20"
-      - name: Enable Corepack
-        run: corepack enable
-      - name: Install dependencies
-        run: pnpm install
-      - name: Lint
-        run: pnpm lint || true
-      - name: Test
-        run: pnpm test || true
-      - name: Login to GHCR
-        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
-      - name: Build Docker image
-        run: docker build -t ghcr.io/mallarb20000/score-frontend:latest .
-      - name: Push Docker image
-        run: docker push ghcr.io/mallarb20000/score-frontend:latest
+  # frontend:
+  #   runs-on: ubuntu-latest
+  #   defaults:
+  #     run:
+  #       working-directory: frontend
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - uses: actions/setup-node@v4
+  #       with:
+  #         node-version: "20"
+  #     - name: Enable Corepack
+  #       run: corepack enable
+  #     - name: Install dependencies
+  #       run: pnpm install
+  #     - name: Lint
+  #       run: pnpm lint || true
+  #     - name: Test
+  #       run: pnpm test || true
+  #     - name: Login to GHCR
+  #       run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+  #     - name: Build Docker image
+  #       run: docker build -t ghcr.io/mallarb20000/score-frontend:latest .
+  #     - name: Push Docker image
+  #       run: docker push ghcr.io/mallarb20000/score-frontend:latest
 
   deploy-eb:
     needs: [backend, frontend]
