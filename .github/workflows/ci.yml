@@ -55,14 +55,14 @@ jobs:
   #     - name: Test
   #       run: pnpm test || true
   #     - name: Login to GHCR
-  #       run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+  #       missing line ask gpt
   #     - name: Build Docker image
   #       run: docker build -t ghcr.io/mallarb20000/score-frontend:latest .
   #     - name: Push Docker image
   #       run: docker push ghcr.io/mallarb20000/score-frontend:latest
 
   deploy-eb:
-    needs: [backend, frontend]
+    needs: [backend]
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
     steps:
