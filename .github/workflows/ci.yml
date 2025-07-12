@@ -62,7 +62,7 @@ jobs:
   #       run: docker push ghcr.io/mallarb20000/score-frontend:latest
 
   deploy-eb:
-    needs: [backend, frontend]
+    needs: [backend]
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
     steps:
