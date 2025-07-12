@@ -54,13 +54,35 @@ jobs:
           role-to-assume: arn:aws:iam::537976614557:role/Github
           aws-region: eu-north-1
 
-      - name: Update Beanstalk Docker image and environment variables
+      - name: Create EB Application Version (AL2023 image URI)
+        run: |
+          echo '{
+            "Platform": "Docker running on 64bit Amazon Linux 2023",
+            "Image": {
+              "Name": "ghcr.io/mallarb20000/score-backend:${{ env.IMAGE_TAG }}"
+            }
+          }' > imagedef.json
+
+          aws elasticbeanstalk create-application-version \
+            --application-name Scorespoken-prod \
+            --version-label ${{ env.IMAGE_TAG }} \
+            --source-build-information file://imagedef.json \
+            --region eu-north-1 \
+            --process
+
+      - name: Update EB Environment to new version
+        run: |
+          aws elasticbeanstalk update-environment \
+            --environment-name Scorespoken-prod-env \
+            --version-label ${{ env.IMAGE_TAG }} \
+            --region eu-north-1
+
+      - name: Update EB Environment Variables
         run: |
           aws elasticbeanstalk update-environment \
             --environment-name Scorespoken-prod-env \
             --region eu-north-1 \
             --option-settings \
-              Namespace=aws:elasticbeanstalk:container:docker,OptionName=Image,Value=ghcr.io/mallarb20000/score-backend:${{ env.IMAGE_TAG }} \
               Namespace=aws:elasticbeanstalk:application:environment,OptionName=DJANGO_SECRET_KEY,Value=dev \
               Namespace=aws:elasticbeanstalk:application:environment,OptionName=DJANGO_SETTINGS_MODULE,Value=score.settings \
               Namespace=aws:elasticbeanstalk:application:environment,OptionName=ALLOWED_HOSTS,Value=*
