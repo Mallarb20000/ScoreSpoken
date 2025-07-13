@@ -1,0 +1,30 @@
+# backend/docker-compose.yml
+
+version: '3.7'
+
+services:
+  web:
+    # This tells Elastic Beanstalk to use the image you built and pushed to GitHub Container Registry.
+    # The ${IMAGE_TAG} variable will be automatically sourced from your environment.
+    image: ghcr.io/mallarb20000/score-backend:${IMAGE_TAG}
+
+    # This maps port 8000 on the Docker container to port 80 on the host machine,
+    # which is what Elastic Beanstalk's proxy server (like Nginx) expects.
+    ports:
+      - "80:8000"
+
+    # Forwards logs so you can see them in the Elastic Beanstalk console.
+    logging:
+      driver: "awslogs"
+      options:
+        awslogs-group: "/aws/elasticbeanstalk/Scorespoken-prod-env/docker-logs"
+        awslogs-region: "eu-north-1"
+        awslogs-stream-prefix: "web"
+
+    # Passes environment variables into your container.
+    # It's best practice to manage secrets securely (e.g., with AWS Secrets Manager),
+    # but this matches your original setup for now.
+    environment:
+      - DJANGO_SECRET_KEY=dev
+      - DJANGO_SETTINGS_MODULE=score.settings
+      - ALLOWED_HOSTS=*
