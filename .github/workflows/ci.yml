@@ -12,9 +12,7 @@ permissions:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: backend
+    
 
     env:
       IMAGE_TAG: ${{ github.sha }}
@@ -55,8 +53,6 @@ jobs:
       - name: Create deployment bundle (with docker-compose.yml)
         run: |
           echo "IMAGE_TAG=${{ env.IMAGE_TAG }}" > .env
-          cp docker-compose.yml ../
-          cd ..
           zip -r deploy.zip docker-compose.yml .env backend
 
       - name: Upload bundle to S3
