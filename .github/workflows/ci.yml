@@ -60,7 +60,7 @@ jobs:
           zip -r deploy.zip docker-compose.yml .env backend
 
       - name: Upload bundle to S3
-        run: aws s3 cp ../deploy.zip s3://scorespoken-assests-prod/deploy-${{ env.IMAGE_TAG }}.zip
+        run: aws s3 cp deploy.zip s3://scorespoken-assests-prod/deploy-${{ env.IMAGE_TAG }}.zip
 
       - name: Create new Elastic Beanstalk app version
         run: |
