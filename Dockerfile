@@ -3,8 +3,8 @@ FROM python:3.12-slim
 # Set working directory inside container
 WORKDIR /app
 
-# Copy dependency files from backend
-COPY backend/pyproject.toml backend/poetry.lock backend/README.md ./  
+# Copy dependency files 
+COPY pyproject.toml poetry.lock README.md ./  
 
 # Install dependencies
 RUN pip install poetry && poetry config virtualenvs.create false && poetry install --no-interaction --no-ansi
