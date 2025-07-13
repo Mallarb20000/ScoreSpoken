@@ -11,7 +11,7 @@ RUN pip install poetry && \
     poetry install --no-interaction --no-ansi
 
 # Copy app source code
-COPY . .
+COPY backend/ .
 
 # Optional: collect static files for admin/media use
 RUN poetry run python manage.py collectstatic --noinput
