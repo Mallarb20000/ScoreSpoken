@@ -12,7 +12,10 @@ permissions:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    
+
+    defaults:
+      run:
+        working-directory: backend  # 👈 this is essential
 
     env:
       IMAGE_TAG: ${{ github.sha }}
@@ -34,6 +37,7 @@ jobs:
 
       - name: Run tests
         run: poetry run python manage.py test
+
 
       - name: Login to GHCR
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
