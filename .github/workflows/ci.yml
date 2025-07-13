@@ -52,10 +52,28 @@ jobs:
           role-to-assume: arn:aws:iam::537976614557:role/Github
           aws-region: eu-north-1
 
-      - name: Deploy to Beanstalk (Image URI)
+      - name: Create deployment bundle (with docker-compose.yml)
+        run: |
+          echo "IMAGE_TAG=${{ env.IMAGE_TAG }}" > .env
+          cp docker-compose.yml ../
+          cd ..
+          zip -r deploy.zip docker-compose.yml .env backend
+
+      - name: Upload bundle to S3
+        run: aws s3 cp ../deploy.zip s3://scorespoken-assests-prod/deploy-${{ env.IMAGE_TAG }}.zip
+
+      - name: Create new Elastic Beanstalk app version
+        run: |
+          aws elasticbeanstalk create-application-version \
+            --application-name Scorespoken-prod \
+            --version-label ${{ env.IMAGE_TAG }} \
+            --source-bundle S3Bucket=scorespoken-assests-prod,S3Key=deploy-${{ env.IMAGE_TAG }}.zip \
+            --region eu-north-1
+
+      - name: Deploy new version to Beanstalk
         run: |
           aws elasticbeanstalk update-environment \
+            --application-name Scorespoken-prod \
             --environment-name Scorespoken-prod-env \
-            --region eu-north-1 \
-            --option-settings \
-              Namespace=aws:elasticbeanstalk:container:docker,OptionName=Image,Value=ghcr.io/mallarb20000/score-backend:${{ env.IMAGE_TAG }}
+            --version-label ${{ env.IMAGE_TAG }} \
+            --region eu-north-1
