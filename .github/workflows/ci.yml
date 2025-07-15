@@ -55,7 +55,7 @@ jobs:
           aws-region: eu-north-1
 
       - name: Create deployment bundle (with docker-compose.yml)
-        working-directory: .
+       # working-directory: .
         run: |
           echo "IMAGE_TAG=${{ env.IMAGE_TAG }}" > .env
           zip -r deploy.zip docker-compose.yml .env backend .ebextensions
