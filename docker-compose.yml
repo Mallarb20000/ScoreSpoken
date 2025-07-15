@@ -11,7 +11,7 @@ services:
     # This maps port 8000 on the Docker container to port 80 on the host machine,
     # which is what Elastic Beanstalk's proxy server (like Nginx) expects.
     ports:
-      - "80:8000"
+      - "8000:8000"
 
     # Forwards logs so you can see them in the Elastic Beanstalk console.
     logging:
