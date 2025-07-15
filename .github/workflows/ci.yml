@@ -55,9 +55,10 @@ jobs:
           aws-region: eu-north-1
 
       - name: Create deployment bundle (with docker-compose.yml)
+        working-directory: .
         run: |
           echo "IMAGE_TAG=${{ env.IMAGE_TAG }}" > .env
-          zip -r deploy.zip docker-compose.yml .env backend
+          zip -r deploy.zip docker-compose.yml .env backend .ebextensions
 
       - name: Upload bundle to S3
         run: aws s3 cp deploy.zip s3://scorespoken-assests-prod/deploy-${{ env.IMAGE_TAG }}.zip
