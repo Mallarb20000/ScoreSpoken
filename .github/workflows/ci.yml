@@ -66,7 +66,7 @@ jobs:
       - name: Create new Elastic Beanstalk app version
         run: |
           aws elasticbeanstalk create-application-version \
-            --application-name Scorespoken-prod \
+            --application-name scorespoken-prod \
             --version-label ${{ env.IMAGE_TAG }} \
             --source-bundle S3Bucket=scorespoken-assests-prod,S3Key=deploy-${{ env.IMAGE_TAG }}.zip \
             --region eu-north-1
@@ -74,7 +74,7 @@ jobs:
       - name: Deploy new version to Beanstalk
         run: |
           aws elasticbeanstalk update-environment \
-            --application-name Scorespoken-prod \
+            --application-name scorespoken-prod \
             --environment-name Scorespoken-prod-env \
             --version-label ${{ env.IMAGE_TAG }} \
             --region eu-north-1
