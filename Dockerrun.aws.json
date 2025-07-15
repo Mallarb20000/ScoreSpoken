@@ -1,0 +1,39 @@
+{
+  "AWSEBDockerrunVersion": "2",
+  "containerDefinitions": [
+    {
+      "name": "web",
+      "image": "ghcr.io/mallarb20000/score-backend:${IMAGE_TAG}",
+      "essential": true,
+      "memory": 512,
+      "portMappings": [
+        {
+          "hostPort": 8000,
+          "containerPort": 8000
+        }
+      ],
+      "environment": [
+        {
+          "name": "DJANGO_SECRET_KEY",
+          "value": "dev"
+        },
+        {
+          "name": "DJANGO_SETTINGS_MODULE",
+          "value": "score.settings"
+        },
+        {
+          "name": "ALLOWED_HOSTS",
+          "value": "*"
+        }
+      ],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/aws/elasticbeanstalk/Scorespoken-prod-env/docker-logs",
+          "awslogs-region": "eu-north-1",
+          "awslogs-stream-prefix": "web"
+        }
+      }
+    }
+  ]
+}
