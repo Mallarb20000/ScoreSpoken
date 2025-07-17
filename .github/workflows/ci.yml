@@ -57,8 +57,14 @@ jobs:
         run: |
           sed -i "s/\${IMAGE_TAG}/${{ env.IMAGE_TAG }}/g" Dockerrun.aws.json
 
+      - name: List files before bundling
+        run: ls -laR
+
       - name: Create deployment bundle
         run: zip -r deploy.zip Dockerrun.aws.json .ebextensions
+
+      - name: List contents of deployment bundle
+        run: unzip -l deploy.zip
 
       - name: Upload bundle to S3
         run: aws s3 cp deploy.zip s3://scorespoken-assests-prod/deploy-${{ env.IMAGE_TAG }}.zip
