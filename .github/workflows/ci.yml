@@ -28,7 +28,7 @@ jobs:
           docker push ghcr.io/mallarb20000/score-backend:$IMAGE_TAG
       - name: Create EB bundle
         run: |
-          sed "s/\${IMAGE_TAG}/$IMAGE_TAG/g" backend/Dockerrun.aws.json > Dockerrun.aws.json
+          sed "s/\${IMAGE_TAG}/$IMAGE_TAG/g" Dockerrun.aws.json > Dockerrun.aws.json
           zip -r deploy.zip Dockerrun.aws.json .ebextensions
       - name: Upload to S3
         run: aws s3 cp deploy.zip s3://scorespoken-assests-prod/deploy-$IMAGE_TAG.zip
