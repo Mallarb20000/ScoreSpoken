@@ -36,7 +36,6 @@ jobs:
         working-directory: backend
         run: poetry run python manage.py test
 
-
       - name: Login to GHCR
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
@@ -77,13 +76,6 @@ jobs:
             --source-bundle S3Bucket=scorespoken-assests-prod,S3Key=deploy-${{ env.IMAGE_TAG }}.zip \
             --region eu-north-1
 
-      - name: Run migrations on the new version
-        run: |
-          aws elasticbeanstalk update-environment \
-            --application-name scorespoken-prod \
-            --environment-name Scorespoken-prod-env \
-            --option-settings Namespace=aws:elasticbeanstalk:application:environment,OptionName=RUN_MIGRATIONS,Value=true \
-            --region eu-north-1
       - name: Deploy new version to Beanstalk
         run: |
           aws elasticbeanstalk update-environment \
