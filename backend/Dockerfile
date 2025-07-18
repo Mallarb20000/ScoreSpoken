@@ -1,43 +1,13 @@
-# ---------- Build stage ----------
-FROM python:3.12-slim As builder
-
-ENV POETRY_NO_INTERACTION=1 \
-    POETRY_VIRTUALENVS_IN_PROJECT=1 \
-    POETRY_CACHE_DIR=/tmp/poetry_cache
-
-# Install build tools only once
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends gcc libc6-dev && \
-    rm -rf /var/lib/apt/lists/*
-
+FROM python:3.12-slim AS builder
 WORKDIR /app
-
-# Copy dependency files first (maximises layer caching)
 COPY pyproject.toml poetry.lock ./
-
-# Install Poetry and the dependencies
 RUN pip install --no-cache-dir poetry && \
     poetry install --only main --no-root
 
-# ---------- Runtime stage ----------
-FROM python:3.12-slim As runtime
-
-# Create a non-root user
-RUN groupadd -r appuser && useradd -r -g appuser appuser
-
+FROM python:3.12-slim
 WORKDIR /app
-
-# Copy virtual-env from builder stage
 COPY --from=builder /app/.venv ./.venv
-
-# Copy application code
-COPY --chown=appuser:appuser . .
-
-USER appuser
-
-EXPOSE 8000
-
-# Activate virtual-env and run migrations + server
+COPY . .
 ENV PATH="/app/.venv/bin:$PATH"
 EXPOSE 8000
 CMD ["sh", "-c", "python manage.py migrate --noinput && \
