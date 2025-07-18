@@ -26,6 +26,8 @@ jobs:
           docker build -t ghcr.io/mallarb20000/score-backend:$IMAGE_TAG ./backend
           echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
           docker push ghcr.io/mallarb20000/score-backend:$IMAGE_TAG
+
+          
       - name: Create EB bundle
         run: |
           sed "s/\${IMAGE_TAG}/$IMAGE_TAG/g" Dockerrun.aws.json > Dockerrun.aws.json
