@@ -35,6 +35,8 @@ COPY --chown=appuser:appuser . .
 
 USER appuser
 
+EXPOSE 8000
+
 # Activate virtual-env and run migrations + server
 ENV PATH="/app/.venv/bin:$PATH"
 EXPOSE 8000
