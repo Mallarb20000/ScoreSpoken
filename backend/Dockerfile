@@ -17,7 +17,7 @@ COPY pyproject.toml poetry.lock ./
 
 # Install Poetry and the dependencies
 RUN pip install --no-cache-dir poetry && \
-    + poetry install --only main --no-root
+    poetry install --only main --no-root
 
 # ---------- Runtime stage ----------
 FROM python:3.12-slim As runtime
