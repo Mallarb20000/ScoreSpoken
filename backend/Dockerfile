@@ -1,5 +1,5 @@
 # ---------- Build stage ----------
-FROM python:3.12-slim as builder
+FROM python:3.12-slim As builder
 
 ENV POETRY_NO_INTERACTION=1 \
     POETRY_VIRTUALENVS_IN_PROJECT=1 \
@@ -17,10 +17,10 @@ COPY pyproject.toml poetry.lock ./
 
 # Install Poetry and the dependencies
 RUN pip install --no-cache-dir poetry && \
-    poetry install --no-dev --no-root
+    + poetry install --only main --no-root
 
 # ---------- Runtime stage ----------
-FROM python:3.12-slim as runtime
+FROM python:3.12-slim As runtime
 
 # Create a non-root user
 RUN groupadd -r appuser && useradd -r -g appuser appuser
